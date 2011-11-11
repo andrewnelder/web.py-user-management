@@ -1,4 +1,7 @@
 '''
+This is the main routine of the web-app.  It is responsible for addressing,
+session construction/storage, and basic page logic. 
+
 Created on Nov 8, 2011
 @author: andrewnelder
 '''
@@ -10,13 +13,14 @@ from logging import getLogger, basicConfig, DEBUG
 
 LOGGER = getLogger(__name__)
 
-web.config.debug = False
+web.config.debug = False                            # Required for sessions
 
 urls = (
     '/',                    'index',
     '/user/login',          'login',
     '/user/logout',         'logout',
     '/user/create',         'create_user',
+    '/user/delete',         'delete_user',
 )
 app     = web.application(urls, globals())
 store   = web.session.DiskStore('sessions')
@@ -59,6 +63,27 @@ class create_user:
             page = '%s'%render.user.create_error()
         
         return page
+
+class delete_user:
+    
+    def GET(self):
+        '''
+        Delete user form.
+        '''
+        render = get_render()
+        return '%s'%render.user.delete()
+    
+    def POST(self):
+        
+        username = web.input().username
+        password = web.input().password
+        
+        success = database.delete_user(username, password)
+        
+        if success:
+            page = web.seeother('/user/logout')
+        else:
+            page = web.seeother('/user/delete')
 
 class login:
 
@@ -105,6 +130,7 @@ class logout:
         global session
         
         session = session_management.logout(session)
+        
         return web.seeother('/')
 
 def get_render(template='common'):
