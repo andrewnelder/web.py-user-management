@@ -117,7 +117,7 @@ class login:
         render = get_render()
         if session_out:
             session = session_out
-            page = '%s'%render.user.login_ok()
+            page = web.seeother('/')
         else:
             page = '%s'%render.user.login_error()
         
@@ -134,9 +134,10 @@ class logout:
         return web.seeother('/')
 
 def get_render(template='common'):
-    render = web.template.render('templates/common')
+    render = web.template.render('templates/common', \
+                                 globals={'context': session})
     if template is 'admin':
-        render = web.template.render('templates/admin')
+        render = web.template.render('templates/admin', globals={'context': session})
     return render
 
 if __name__ == "__main__":

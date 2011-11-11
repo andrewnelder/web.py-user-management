@@ -1,28 +1,47 @@
-Create User
-
+<html>
+<head>
+	<title>Create User</title>
+	<link rel="stylesheet" type="text/css" href="/static/style.css" />
+</head>
+<body>
+<div id="status">
+$code
+  if context.user_type:
+    logged_status = "You are currently logged in as %s."%context.username
+  else:
+    logged_status = "You are not logged in."
+$logged_status
+</div>
+<div id="form">
 <form action='#' method='POST'>
-	Name:<br />
-	<input type='text' name='username' />
-	
-	<br />
-	<br />
-	
-	Password:<br />
-	<input type='password' name='password' />
-
-	<br />
-	<br />
-	
-	Email:<br />
-	<input type='text' name='email' />
-	
-	<br />
-	<br />
-	
-	<input type='submit' value='Create User' />
+	<b>Create User</b>
+	<table>
+		<tr>
+		<td id="key">Name:</td>
+		<td id="val"><input type='text' name='username' /></td>
+		</tr>
+		<tr>
+		<td id="key">Password:</td>
+		<td id="val"><input type='password' name='password' /></td>
+		</tr>
+		<tr>
+		<td id="key">Email:</td>
+		<td id="val"><input type='text' name='email' /></td>
+		</tr>
+		<tr>
+		<td colspan=2 id="key">
+		<input type='submit' value='Create Account' />
+		</td>
+		</tr>
+	</table>
 </form>
-
-<a href='/'>Index</a><br />
-<a href='/user/create'>Create User</a><br />
-<a href='/user/login'>Login</a><br />
-<a href='/user/logout'>Logout</a><br />
+</div>
+<div id="menu">
+<a href='/'>Index</a> | 
+<a href='/user/create'>Create User</a> | 
+<a href='/user/delete'>Delete User</a> | 
+<a href='/user/login'>Login</a> | 
+<a href='/user/logout'>Logout</a>
+</div>
+</body>
+</html>

@@ -1,7 +1,23 @@
-Index
-
-<a href='/'>Index</a><br />
-<a href='/user/create'>Create User</a><br />
-<a href='/user/delete'>Delete User</a><br />
-<a href='/user/login'>Login</a><br />
-<a href='/user/logout'>Logout</a><br />
+<html>
+<head>
+	<title>Index</title>
+	<link rel="stylesheet" type="text/css" href="/static/style.css" />
+</head>
+<body>
+<div id="status">
+$code
+  if context.user_type:
+    logged_status = "You are currently logged in as %s."%context.username
+  else:
+    logged_status = "You are not logged in."
+$logged_status
+</div>
+<div id="menu">
+<a href='/'>Index</a> | 
+<a href='/user/create'>Create User</a> | 
+<a href='/user/delete'>Delete User</a> | 
+<a href='/user/login'>Login</a> | 
+<a href='/user/logout'>Logout</a>
+</div>
+</body>
+</html>
