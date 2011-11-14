@@ -87,6 +87,8 @@ class delete_user:
             page = web.seeother('/user/logout')
         else:
             page = web.seeother('/user/delete')
+        
+        return page
 
 class login:
 
