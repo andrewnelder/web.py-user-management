@@ -1,9 +1,9 @@
 <html>
 <head>
-	<title>Delete User</title>
+	<title>Index</title>
 	<link rel="stylesheet" type="text/css" href="/static/style.css" />
 </head>
-<body>
+<body style="background:#FF0000">
 <div id="status">
 $code
   if context.is_logged():
@@ -11,26 +11,6 @@ $code
   else:
     logged_status = "You are not logged in."
 $logged_status
-</div>
-<div id="form">
-<form action='#' method='POST'>
-	<b>Delete User</b>
-	<table>
-		<tr>
-		<td id="key">Name:</td>
-		<td id="val"><input type='text' name='username' /></td>
-		</tr>
-		<tr>
-		<td id="key">Password:</td>
-		<td id="val"><input type='password' name='password' /></td>
-		</tr>
-		<tr>
-		<td colspan=2 id="key">
-		<input type='submit' value='Delete Account' />
-		</td>
-		</tr>
-	</table>
-</form>
 </div>
 <div id="menu">
 <a href='/'>Index</a> | 

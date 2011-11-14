@@ -6,7 +6,7 @@
 <body>
 <div id="status">
 $code
-  if context.user_type:
+  if context.is_logged():
     logged_status = "You are currently logged in as %s."%context.username
   else:
     logged_status = "You are not logged in."
@@ -17,7 +17,8 @@ $logged_status
 <a href='/user/create'>Create User</a> | 
 <a href='/user/delete'>Delete User</a> | 
 <a href='/user/login'>Login</a> | 
-<a href='/user/logout'>Logout</a>
+<a href='/user/logout'>Logout</a> |
+<a href='/admin'>Admin</a>
 </div>
 </body>
 </html>

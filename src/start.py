@@ -9,12 +9,10 @@ Created on Nov 8, 2011
 from logging import getLogger, basicConfig, DEBUG
 from web.session import DiskStore
 from session_management import UserSession
-import database
+from database_management import UserDatabase
 import web
 
 LOGGER = getLogger(__name__)
-
-RESTRICTED_PAGES = []
 
 web.config.debug = False                            # Required for sessions
 
@@ -24,11 +22,14 @@ urls = (
     '/user/logout',         'logout',
     '/user/create',         'create_user',
     '/user/delete',         'delete_user',
+    '/admin',               'admin',
+    '/favicon.ico',         'favicon',
 )
 app     = web.application(urls, globals())
 store   = DiskStore('sessions')
 session = UserSession(app, store, initializer = \
                       {'login': 0, 'username': '', 'user_type': 0})
+database = UserDatabase()
 
 class index:
     
@@ -44,7 +45,7 @@ class create_user:
         '''
         
         render = get_render()
-        return '%s'%render.user.create()
+        return render.user.create()
     
     def POST(self):
         '''
@@ -74,7 +75,7 @@ class delete_user:
         Delete user form.
         '''
         render = get_render()
-        return '%s'%render.user.delete()
+        return render.user.delete()
     
     def POST(self):
         
@@ -98,7 +99,7 @@ class login:
         '''
         
         render = get_render()
-        return '%s'%render.user.login()
+        return render.user.login()
     
     def POST(self):
         '''
@@ -114,11 +115,10 @@ class login:
             session.attempt_login(username, user_type)
         
         # if successful then login_ok.html else login_error.html 
-        render = get_render()
         if session.is_logged():
             page = web.seeother('/')
         else:
-            page = '%s'%render.user.login_error()
+            page = web.seeother('/user/login')
         
         return page
 
@@ -128,15 +128,32 @@ class logout:
         session.logout()
         return web.seeother('/')
 
+class admin:
+    
+    def GET(self):
+        if session.is_admin():
+            render = get_render('admin')
+            page = render.admin()
+        else:
+            page = web.seeother('/')
+        return page
+
+class favicon:
+    #TODO: When this is a sub-app -- move to main.
+    def GET(self): 
+        f = open("static/favicon.ico", 'rb') 
+        return f.read() 
+
 def get_render(template='common'):
     
     render = web.template.render('templates/common', \
                                  globals={'context': session})
     if template is 'admin':
-        render = web.template.render('templates/admin', globals={'context': session})
+        render = web.template.render('templates/admin', \
+                                     globals={'context': session})
+
     return render
 
 if __name__ == "__main__":
     basicConfig(level=DEBUG)
-    database.setup_database()
     app.run()
