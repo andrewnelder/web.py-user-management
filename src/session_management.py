@@ -13,93 +13,85 @@ Created on Nov 8, 2011
 @author: andrewnelder
 '''
 
+from web.session import Session
 from logging import getLogger
 from util.config import USER_TYPES
 
 LOGGER = getLogger(__name__)
 
-def attempt_login(session, username, user_type):
-    '''
-    Attempts to build an active session for the user.  Someone else may choose
-    to replace this with the unique id, so user information can be easily
-    accessed later.  However, since this is merely a demo -- I would like to
-    avoid the excess database query all together.
-    
-    @param session:
-        The session variable.
-    @type session:
-        web.Session
-    
-    @param username:
-        A username to store in the session variable.  
-    @type username:
-        String
-    
-    @param user_type:
-        The user-type of the user attempting to login.
-    @type user_type:
-        Integer (util.config.USER_TYPES)
-    
-    @return:
-        The updated user session.
-    @rtype:
-        web.Session
-    '''
+class UserSession(Session):
+    def attempt_login(self, username, user_type):
+        '''
+        Attempts to build an active session for the user.  Someone else may choose
+        to replace this with the unique id, so user information can be easily
+        accessed later.  However, since this is merely a demo -- I would like to
+        avoid the excess database query all together.
+        
+        @param session:
+            The session variable.
+        @type session:
+            web.Session
+        
+        @param username:
+            A username to store in the session variable.  
+        @type username:
+            String
+        
+        @param user_type:
+            The user-type of the user attempting to login.
+        @type user_type:
+            Integer (util.config.USER_TYPES)
+        
+        @return:
+            The updated user session.
+        @rtype:
+            web.Session
+        '''
 
-    session_out = None    
-    if user_type in USER_TYPES.values():
-        session.login = 1
-        session.username = username
-        session.user_type = user_type
-        session_out = session
+        if user_type in USER_TYPES.values():
+            self.login = 1
+            self.username = username
+            self.user_type = user_type
     
-    if session_out:
-        LOGGER.info('Session built successfully.')
-    else:
-        LOGGER.warning('Session failed to build for type <%s>.'%str(user_type))
+    def logout(self):
+        '''
+        Logs a user account out, regardless of it's activity.
+        
+        @param session:
+            The session variable.
+        @type session:
+            web.Session
+        
+        @return session:
+            The updated user session.
+        @rtype:
+            web.Session
+        '''
+        
+        self.login = 0
+        self.username = ''
+        self.user_type = 0
     
-    return session_out
-
-def logout(session):
-    '''
-    Logs a user account out, regardless of it's activity.
+    def is_admin(self):
+        '''
+        Quick check to see if a user is an administrator.
+        
+        @param session:
+            The session variable.
+        @type session:
+            web.Session
+        '''
+        
+        return (USER_TYPES['admin'] == self.user_type)
     
-    @param session:
-        The session variable.
-    @type session:
-        web.Session
-    
-    @return session:
-        The updated user session.
-    @rtype:
-        web.Session
-    '''
-    
-    session.login = 0
-    session.username = ''
-    session.user_type = 0
-    return session
-
-def is_admin(session):
-    '''
-    Quick check to see if a user is an administrator.
-    
-    @param session:
-        The session variable.
-    @type session:
-        web.Session
-    '''
-    
-    return (USER_TYPES['admin'] == session.user_type)
-
-def is_logged(session):
-    '''
-    Quick check to see if the user is actively logged in.
-    
-    @param session:
-        The session variable.
-    @type session:
-        web.Session
-    '''
-    
-    return bool(session.login)
+    def is_logged(self):
+        '''
+        Quick check to see if the user is actively logged in.
+        
+        @param session:
+            The session variable.
+        @type session:
+            web.Session
+        '''
+        
+        return bool(self.login)

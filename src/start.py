@@ -6,12 +6,15 @@ Created on Nov 8, 2011
 @author: andrewnelder
 '''
 
-import web
-import database
-import session_management
 from logging import getLogger, basicConfig, DEBUG
+from web.session import DiskStore
+from session_management import UserSession
+import database
+import web
 
 LOGGER = getLogger(__name__)
+
+RESTRICTED_PAGES = []
 
 web.config.debug = False                            # Required for sessions
 
@@ -23,9 +26,9 @@ urls = (
     '/user/delete',         'delete_user',
 )
 app     = web.application(urls, globals())
-store   = web.session.DiskStore('sessions')
-session = web.session.Session(app, store, initializer = \
-                              {'login': 0, 'username': '', 'user_type': 0})
+store   = DiskStore('sessions')
+session = UserSession(app, store, initializer = \
+                      {'login': 0, 'username': '', 'user_type': 0})
 
 class index:
     
@@ -100,23 +103,17 @@ class login:
         The login form targets itself.
         '''
         
-        global session
-        
         username = web.input().username
         password = web.input().password
         
         # determine if username and password are correct
-        session_out = None
         user_type = database.attempt_login(username, password)
         if user_type:
-            session_out = session_management.attempt_login(session, 
-                                                           username, 
-                                                           user_type)
+            session.attempt_login(username, user_type)
         
         # if successful then login_ok.html else login_error.html 
         render = get_render()
-        if session_out:
-            session = session_out
+        if session.is_logged():
             page = web.seeother('/')
         else:
             page = '%s'%render.user.login_error()
@@ -126,14 +123,11 @@ class login:
 class logout:
     
     def GET(self):
-        
-        global session
-        
-        session = session_management.logout(session)
-        
+        session.logout()
         return web.seeother('/')
 
 def get_render(template='common'):
+    
     render = web.template.render('templates/common', \
                                  globals={'context': session})
     if template is 'admin':
