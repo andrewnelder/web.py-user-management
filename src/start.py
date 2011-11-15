@@ -43,6 +43,9 @@ class favicon:
 
 # Sessions
 def session_hook():
+    print 'killed', session.is_expired()
+    if session.is_expired():
+        session.logout()
     web.ctx.session = session
 app.add_processor(web.loadhook(session_hook))
 

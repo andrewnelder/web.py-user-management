@@ -13,13 +13,20 @@ Created on Nov 8, 2011
 @author: andrewnelder
 '''
 
-from web.session import Session
 from logging import getLogger
 from util.config import USER_TYPES
+from web.session import Session
+import web
 
 LOGGER = getLogger(__name__)
+SESSION_EXPIRATION_TIME = 1*60*60
 
 class UserSession(Session):
+    
+    def __init__(self, *args, **kwargs):
+        web.config.session_parameters['timeout'] = SESSION_EXPIRATION_TIME
+        super(UserSession, self).__init__(*args, **kwargs)
+        
     def attempt_login(self, username, user_type):
         '''
         Attempts to build an active session for the user.  Someone else may choose
@@ -71,6 +78,15 @@ class UserSession(Session):
         self.login = 0
         self.username = ''
         self.user_type = 0
+    
+    def is_expired(self):
+        '''
+        Determines if the session has been expired.
+        '''
+        expired_status = False
+        if self.session_id and self.session_id not in self.store:
+            expired_status = True
+        return expired_status
     
     def is_admin(self):
         '''
